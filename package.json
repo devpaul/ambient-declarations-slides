@@ -1,0 +1,24 @@
+{
+  "name": "ambient-declarations-slides",
+  "version": "1.0.0",
+  "description": "Presenting TypeScript Ambient Declarations",
+  "author": "Paul Shannon",
+  "license": "CC 3.0",
+  "scripts": {
+    "install": "bower install"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-stylus": "^1.2.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-devserver": "^0.6.0",
+    "grunt-gh-pages": "^2.0.0",
+    "typescript": "^2.2.1"
+  },
+  "dependencies": {
+    "dojo": "^1.12.2",
+    "dojo-typings": "^1.11.6",
+    "grunt-devserver": "^0.6.0"
+  }
+}
