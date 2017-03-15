@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Ambient Declarations</title>
+
+    <meta name="description" content="TypeScript Development Workflow">
+    <meta name="author" content="Paul Shannon">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="bower_components/reveal.js/css/reveal.css">
+    <link rel="stylesheet" href="bower_components/reveal.js/css/theme/sky.css" id="theme">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="bower_components/reveal.js/lib/css/zenburn.css">
+    <link rel="stylesheet" href="resources/main.css">
+
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'bower_components/reveal.js/css/print/pdf.css' : 'bower_components/reveal.js/css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="bower_components/reveal.js/lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+
+	<!-- Any section element inside of this container is displayed as a slide -->
+	<div class="slides">
+		<section class="full">
+			<h1>Ambient Declarations</h1>
+		</section>
+
+		<section>
+			<p>TypeScript was conceived as a superset to JavaScript that provides type-checking at design-time.</p>
+		</section>
+
+		<section>
+			<p>TypeScript code is made up of a <i>declaration</i> and <i>definition</i></p>
+			<br>
+
+			<ul>
+				<li class="fragment">The <b>declaration</b> describes the shape of a variable, interface, class</li>
+				<li class="fragment">The <b>definition</b> is the actual implementation</li>
+			</ul>
+		</section>
+
+		<section>
+			<h3>Declaration</h3>
+
+			<pre><code data-trim>
+				declare const map: { [ key: string ]: string };
+			</code></pre>
+
+			<br>
+
+			<h3>Definition</h3>
+
+			<pre><code data-trim>
+				const map = {
+					one: 1,
+					two: 2
+				};
+			</code></pre>
+		</section>
+
+		<section>
+			<h3>Combined</h3>
+
+			<pre><code data-trim>
+				class {
+					one: number;
+					two: number;
+
+					constructor(one = 1, two = 2) {
+						this.one = one;
+						this.two = two;
+					}
+				}
+			</code></pre>
+
+			<p>Classes are one part interface one part implementation</p>
+		</section>
+
+		<section>
+			<p>Declarations have <u>zero</u> impact on compiled TypeScript code.</p>
+
+			<br>
+
+			<p>The TypeScript compiler erases all typing information after building your project.</p>
+		</section>
+
+		<section>
+			<h2>Ambient Declarations</h2>
+		</section>
+
+		<section>
+			<p>Sooner or later, your application will depend on other code that is:</p>
+
+			<ul>
+				<li>Not written in TypeScript</li>
+				<li>Does not have type information</li>
+			</ul>
+		</section>
+
+		<section>
+			<p>Ambient declarations describe the public API of external libraries</p>
+
+			<ul>
+				<li>Purely comprised of types and interfaces</li>
+				<li>Contain no implementation details</li>
+				<li>Stored in a <i>.d.ts</i> file</li>
+			</ul>
+		</section>
+
+		<section>
+			<h3>A jQuery declaration</h3>
+
+			<pre><code data-trim>
+				interface JQueryStatic {
+					/**
+					 * Accepts a string containing a CSS selector which is then used to match a set of elements.
+					 *
+					 * @param element A DOM element to wrap in a jQuery object.
+					 */
+					(element: string): JQuery;
+				};
+
+				interface JQuery {
+					click(callback: (event: any) => void): JQuery;
+				};
+			</code></pre>
+		</section>
+
+		<section>
+			<h3>When writing your own typings</h3>
+
+			<div>
+			<ul>
+				<li>Only implement interfaces you use</li>
+				<li>Only declare public interfaces</li>
+				<li>Don't worry about corner case typings; only define types for standard usage</li>
+			</ul>
+			</div>
+		</section>
+
+		<section>
+			<h2>Common Use Cases</h2>
+		</section>
+
+		<section>
+			<h3>Global Modules</h3>
+
+			<p>Modules that are loaded via a <i>script</i> tag or are loaded in the global space can be declared as a
+				named variable</p>
+
+			<pre><code data-trim>
+				declare var jQuery: JQueryStatic;
+			</code></pre>
+		</section>
+
+		<section>
+			<h3>External Modules</h3>
+
+			<p>when components are loaded (like AMD or Node.js) modules can be declared with the module id</p>
+
+			<pre><code data-trim>
+				declare module 'dojo/require' {
+					const require: dojo.RequirePlugin;
+					export = require;
+				}
+			</code></pre>
+		</section>
+
+		<section>
+			<h2>Using Ambient Declarations</h2>
+		</section>
+
+		<section>
+			<p><a href="http://definitelytyped.org/">Definitely Typed</a> is the original typings repository</p>
+
+			<p class="fragment"><a href="https://github.com/typings/typings">Typings</a> is the popular CLI tool for working with
+				ambient declaration repositories. It creates a <i>typings.json</i> file used to install and manage
+				typings for your project.</p>
+		</section>
+
+		<section>
+			<p><a href="https://www.npmjs.com/~types">@types</a> publishes ambient declarations from Definitely Typed
+				to npm</p>
+
+			<br>
+
+			<pre class="fragment"><code data-trim>
+				npm install @types/node --save
+			</code></pre>
+
+			<br>
+
+			<div class="fragment">
+				<p>By default TypeScript includes all declarations in the <i>@types</i> directory.</p>
+				<p>You can also <a href="https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#types-typeroots-and-types">configure it yourself</a>.</p>
+			</div>
+		</section>
+
+		<section>
+			<p>A reference to an declaration file can be declared in a special comment</p>
+
+			<br>
+
+			<div>
+				<pre><code data-trim>
+					///&lt;reference path="jquery.d.ts"/&gt;
+				</code></pre>
+			</div>
+		</section>
+
+		<section>
+			<p>Ambient declarations can be explicitly included in your project</p>
+
+			<pre><code data-trim>
+				{
+					"version": "2.1.0",
+					"compilerOptions": { },
+					"include": [
+						"./app/src/**/*.ts"
+					],
+					"files": [
+						"./node_modules/dojo-typings/dojo/1.11/index.d.ts",
+						"./node_modules/dojo-typings/dojo/1.11/modules.d.ts",
+						"./node_modules/dojo-typings/dijit/1.11/index.d.ts",
+						"./node_modules/dojo-typings/dijit/1.11/modules.d.ts",
+						"./node_modules/dojo-typings/custom/dgrid/1.1/dgrid.d.ts",
+						"./node_modules/dojo-typings/custom/dstore/1.1/dstore.d.ts"
+					]
+				}
+			</code></pre>
+		</section>
+
+		<section>
+			<h2>Creating Good Declarations</h2>
+		</section>
+
+		<section>
+			<p>TypeScript will now generate ambient declarations for your project with the <b>declaration</b> compiler option</p>
+
+			<pre><code data-trim>
+				{
+					"version": "2.1.0",
+					"compilerOptions": {
+						declaration: true,
+						declarationDir: "./dist/typings"
+					},
+					"include": [
+						"./app/src/**/*.ts"
+					]
+				}
+			</code></pre>
+		</section>
+
+		<section>
+			<p>Definitely Typed recommends writing a
+				<a href="https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/backbone">small implementation</a> that exercises your declarations</p>
+		</section>
+
+		<section>
+			<p>Tests are an even better way to exercise declarations</p>
+
+			<p class="fragment">For dojo typings, we converted our Intern tests to use ESM style imports and then
+				built against our ambient declarations</p>
+		</section>
+
+		<section>
+			<h3>Split declarations and module definitions</h3>
+
+			<ul>
+				<li>index.d.ts - includes namespaced declarations</li>
+				<li>modules.d.ts - provides pathed modules</li>
+			</ul>
+		</section>
+
+		<section>
+			<h3>working with Ambient Declarations</h3>
+		</section>
+
+		<section>
+			<h3>Fixing Types</h3>
+
+			<pre><code data-trim data-noescape>
+				export interface FixedEventedConstructor {
+					new (params?: Object): dojo.Evented;
+				}
+
+				export const FixedEvented: FixedEventedConstructor = &lt;any&gt; Evented;
+
+				export default class extends FixedEvented {
+					// ...
+				}
+			</code></pre>
+
+			<p>Evented's constructor was incorrectly declared so we fixed it in our project</p>
+		</section>
+
+		<section>
+			<h3>Merging Types</h3>
+
+			<pre><code data-trim>
+				// from old.version.d.ts
+				interface MyFactory {
+					builder() => any;
+				}
+
+				// add a missing method
+				interface MyFactory {
+					parser(value: any) => any;
+				}
+			</code></pre>
+
+			<p>Sometimes only typings for older versions of a library are available. When multiple versions of an
+			interface are present TypeScript will attempt to merge them together.</p>
+		</section>
+
+		<section>
+			<h3>Expanding Declarations</h3>
+
+			<pre><code data-trim>
+				interface Screen extends _WidgetBase {
+					set(name: 'model', value: Model): this;
+					get(name: 'value'): Data;
+					set(name: 'value', value: Data): this;
+					// holla-back methods
+					get(name: string): any;
+					set(name: string, value: any): this;
+					set(name: Object): this;
+				}
+			</code></pre>
+		</section>
+
+		<section>
+			<h3>Advanced Merging</h3>
+
+			<pre><code data-trim>
+				declare module 'dojo/_base/Deferred' {
+					type Deferred&lt;T&gt; = dojo._base.Deferred&lt;T&gt;;
+					const Deferred: dojo._base.DeferredConstructor;
+					export = Deferred;
+				}
+			</code></pre>
+
+			<p>TypeScript will merge declarations and interfaces with the same name and infer its usage like a class</p>
+		</section>
+
+		<section>
+			<h3>Using JS Mixin Pattern</h3>
+
+			<pre><code data-trim>
+				import * as declare from 'dojo/_base/declare';
+
+				export default function (... mixins: Object[]): ClassDecorator {
+					return function (target: Function) {
+						return declare(mixins, target.prototype);
+					};
+				}
+			</code></pre>
+
+			<p>We wanted to use classes in TypeScript with the Dojo Toolkit</p>
+		</section>
+
+		<section>
+			<h3>Mixin Usage</h3>
+
+			<pre><code data-trim>
+				interface Screen extends _WidgetBase, _TemplatedMixin, _Container {
+					set(name: 'model', value: Model): this;
+					set(name: string, value: any): this;
+					set(name: Object): this;
+				}
+
+				@declare(_WidgetBase, _TemplatedMixin, _Container)
+				class Screen {
+					model?: Model;
+				}
+			</code></pre>
+
+			<p>The decorator extends the class, the interface declares the types it extends, and TypeScript merges
+				it with the class interface</p>
+		</section>
+
+		<section>
+			<h3>Ambient Declarations by Example</h3>
+
+			<ul>
+				<li><a href="https://github.com/Microsoft/TypeScript/tree/master/lib">TypeScript</a></li>
+				<li><a href="https://github.com/DefinitelyTyped/DefinitelyTyped">Definitely Typed</a></li>
+				<li><a href="https://github.com/dojo/typings">dojo/typings</a></li>
+			</ul>
+		</section>
+	</div>
+</div>
+
+<script src="bower_components/reveal.js/lib/js/head.min.js"></script>
+<script src="bower_components/reveal.js/js/reveal.js"></script>
+
+<script>
+
+    // Full list of configuration options available at:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        width: '100%',
+        height: '100%',
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+            {
+                src: 'bower_components/reveal.js/lib/js/classList.js', condition: function () {
+                return !document.body.classList;
+            }
+            },
+            {
+                src: 'bower_components/reveal.js/plugin/markdown/marked.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            }
+            },
+            {
+                src: 'bower_components/reveal.js/plugin/markdown/markdown.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            }
+            },
+            {
+                src: 'bower_components/reveal.js/plugin/highlight/highlight.js', async: true, condition: function () {
+                return !!document.querySelector('pre code');
+            }, callback: function () {
+                hljs.initHighlightingOnLoad();
+            }
+            },
+            {src: 'bower_components/reveal.js/plugin/zoom-js/zoom.js', async: true},
+            {src: 'bower_components/reveal.js/plugin/notes/notes.js', async: true}
+        ]
+    });
+
+</script>
+
+</body>
+</html>
